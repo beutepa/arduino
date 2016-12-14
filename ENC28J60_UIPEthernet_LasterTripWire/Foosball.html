@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="robots" content="index, follow">
+		<title>-= FOOSBALL SCORE =-</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js" type="text/javascript"></script>
+		<style>
+		#container {
+			display: table;
+			width:100%;
+			}
+
+		  #row  {
+			display: table-row;
+			}
+
+		  #left, #right, #middle {
+			display: table-cell;
+			}
+		</style>
+	</head>
+	<body>
+		<center><h1>Scoreboard</h1><center>
+		<div id="container">
+		  <div id="row">
+
+			<div id="left">
+				<h2>BLUE</h2>
+			</div>
+
+			<div id="middle">
+				<h2>vs.</h2>
+			</div>
+
+			<div id="right">
+				<h2>WHITE</h2>
+			</div>
+		  </div>
+		  <div id="row">
+
+			<div id="left">
+				<h1 data-bind="text: blue"></h1>
+			</div>
+
+			<div id="middle">
+				<h1>-</h1>
+			</div>
+
+			<div id="right">
+				<h1 data-bind="text: white"></h1>
+			</div>
+		  </div>
+		</div>
+		
+		<script type="text/javascript">
+		
+			function AppViewModel() {
+				var self = this;
+				self.blue = ko.observable("0");
+				self.white = ko.observable("0");
+				
+				self.update = function() {
+					var url = 'http://192.168.1.160:1000/';
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', url, true);
+					xhr.send();
+
+					xhr.onreadystatechange = processRequest;
+					 
+					function processRequest(e) {
+					 if (xhr.readyState == 4 && xhr.status == 200) {
+							var response = JSON.parse(xhr.responseText);
+							self.blue(response.score.blue);
+							self.white(response.score.white);
+						}
+					}				
+				 }
+			}
+
+			// Activates knockout.js
+			var appViewModel = new AppViewModel();
+			window.setInterval(appViewModel.update,5000);
+			ko.applyBindings(appViewModel);  
+
+		</script>
+	</body>
+</html>
